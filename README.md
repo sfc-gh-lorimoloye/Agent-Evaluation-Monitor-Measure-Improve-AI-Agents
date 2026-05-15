@@ -226,7 +226,66 @@ This alias-based routing is what enables safe, reversible deployments.
 
 ---
 
-## Session 5: Setting Up Alerts
+## Session 5: CI/CD Workflow
+
+This repo includes a complete CI/CD pipeline for automated agent evaluation and deployment.
+
+### Architecture
+
+```
+PR opened (agent_spec.yaml modified)
+    │
+    ▼
+┌──────────────────────┐
+│  Deploy Candidate    │  ALTER AGENT → COMMIT → staging alias
+└──────────┬───────────┘
+           ▼
+┌──────────────────────┐
+│  Run Evaluation      │  Upload YAML → EXECUTE_AI_EVALUATION → Poll status
+└──────────┬───────────┘
+           ▼
+┌──────────────────────┐
+│  Quality Gate        │  answer_correctness ≥ 0.75? logical_consistency ≥ 0.80?
+└──────────┬───────────┘
+           │
+     ┌─────┴─────┐
+     ▼           ▼
+   ✅ PASS     ❌ FAIL
+     │           │
+     ▼           ▼
+  PR Merge    PR Blocked
+  allowed     (fix & retry)
+     │
+     ▼
+┌──────────────────────┐
+│  Promote to Prod     │  MODIFY VERSION SET ALIAS = production
+└──────────────────────┘
+```
+
+### Pipeline Scripts
+
+| Script | Purpose |
+|--------|---------|
+| [`scripts/deploy_candidate.py`](scripts/deploy_candidate.py) | Deploy agent spec as new committed version with staging alias |
+| [`scripts/run_evaluation_ci.py`](scripts/run_evaluation_ci.py) | Upload eval config to stage and start evaluation run |
+| [`scripts/poll_evaluation.py`](scripts/poll_evaluation.py) | Poll EXECUTE_AI_EVALUATION STATUS until COMPLETED or FAILED |
+| [`scripts/quality_gate.py`](scripts/quality_gate.py) | Check metrics against thresholds, post results to PR |
+| [`scripts/promote_version.py`](scripts/promote_version.py) | Assign production alias to latest version |
+| [`scripts/rollback.py`](scripts/rollback.py) | Rollback production alias to previous version |
+
+### GitHub Actions Setup
+
+1. Add secrets to your repository: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`
+2. The workflow triggers on PRs that modify `configs/agent_spec.yaml` or `configs/eval_config.yaml`
+3. Configure thresholds in `.github/workflows/agent-cicd.yml`
+
+### Scheduled Evaluation
+
+Run [`sql/scheduled_eval_and_alerts.sql`](sql/scheduled_eval_and_alerts.sql) to set up daily evaluation tasks that detect regressions from model updates, data changes, or tool drift.
+
+---
+
+## Session 6: Setting Up Alerts
 
 Alerts can monitor metrics of interest from Snowflake agent observability event logs. Below are examples for evaluation accuracy, latency, reliability, and user feedback thresholds.
 
@@ -266,9 +325,11 @@ THEN
   );
 ```
 
+See [`sql/scheduled_eval_and_alerts.sql`](sql/scheduled_eval_and_alerts.sql) for additional alerts covering latency, reliability, and user feedback.
+
 ---
 
-## Session 6: Relevant Skills
+## Session 7: Relevant Skills
 
 - Dataset-curation skill
 - Evaluation skill
@@ -277,7 +338,7 @@ THEN
 
 ---
 
-## Session 7: Relevant Links
+## Session 8: Relevant Links
 
 - [Agent Evaluation Best Practices](https://www.snowflake.com/en/developers/guides/best-practices-for-evaluating-cortex-agents/)
 - [Cortex Agent Versioning](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-versioning)

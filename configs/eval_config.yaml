@@ -1,0 +1,14 @@
+evaluation:
+  agent_params:
+    agent_name: "MARKETING_CAMPAIGNS_DB.AGENTS.MARKETING_CAMPAIGNS_AGENT"
+    agent_type: "CORTEX AGENT"
+  run_params:
+    label: "ci-evaluation"
+    description: "CI/CD pipeline evaluation run"
+  source_metadata:
+    type: "dataset"
+    dataset_name: "MARKETING_CAMPAIGNS_DB.AGENTS.MARKETING_CAMPAIGNS_AGENT_EVAL_20260507_085636"
+
+metrics:
+  - "answer_correctness"
+  - "logical_consistency"

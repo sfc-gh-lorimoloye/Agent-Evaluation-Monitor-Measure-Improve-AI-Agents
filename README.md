@@ -37,7 +37,7 @@ A few practical implications:
 - **Pinning protects you from model deprecations, but not silently.** Unversioned metrics and `auto` roll forward to the newest supported version when their current version is deprecated — your runs keep working, but scores can shift. Pinned versions do not roll forward, so a run pinning a deprecated version fails with an error after the deprecation date. With `claude-4-sonnet` deprecating in October, pin `v3` in scheduled and CI/CD evaluations and upgrade deliberately.
 - **Region and model-allowlist coverage differs by version.** `v2` adds coverage for AWS US FedRAMP High Plus, AWS US DoD, AWS AU, and Azure US FedRAMP High Plus. If none of a version's judge models are allowed in your account or available in your region, the run fails at start rather than silently substituting a different model.
 
-See *System metric versions* in the Snowflake documentation for the full judge model availability matrix.
+See [System metric versions](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-evaluations#label-agent-evaluation-metric-versions) in the Snowflake documentation for the full judge model availability matrix.
 
 ### 3. Ensure you have the appropriate privileges
 

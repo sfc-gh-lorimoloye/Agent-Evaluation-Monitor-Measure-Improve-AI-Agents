@@ -123,7 +123,7 @@ Create a Cortex agent evaluation on the agent AGENT_RLS.PUBLIC.RETAIL_AGENT
 - `tool_selection_accuracy` — Did the agent pick the right tools? (requires ground truth)
 - `tool_execution_accuracy` — Were tool parameters correct? (requires ground truth)
 - `logical_consistency` — Is the response internally consistent? (no ground truth needed)
-- Custom metric — Define your own LLM-judged metric with a prompt and score range
+- `custom metric` — Define your own LLM-judged metric with a prompt and score range
 
 Select all metrics.
 
